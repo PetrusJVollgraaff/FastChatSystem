@@ -1,6 +1,8 @@
 import React, { useRef, useState } from 'react'
+import { useSocket } from '../../contexts/SocketProvider';
 
 export default function ChatCTN() {
+  const {sendMessage} = useSocket()
   const inputMessageRef = useRef(null)
   const [messageDetail, setMessageDetail] = useState({
     message: ""
@@ -30,7 +32,7 @@ export default function ChatCTN() {
 
   const handleSubmit = (evt)=>{
     evt.preventDefault()
-
+    sendMessage(messageDetail)
     console.log(messageDetail)
   }
   
@@ -48,6 +50,7 @@ export default function ChatCTN() {
                 onChange={onInputChange}
                 ref={inputMessageRef}
               ></textarea>
+              <button type="submit">Send</button>
             </form>            
         </div>
     </div>

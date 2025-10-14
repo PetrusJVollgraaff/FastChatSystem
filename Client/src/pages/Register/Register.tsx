@@ -3,7 +3,7 @@ import { useAuth } from '../../contexts/AutherizedProvider'
 
 
 export default function RegistePage() {
-    const { registerUser } = useAuth
+    const { registerUser } = useAuth()
     const inputConfirmRef = useRef(null)
     const inputPasswordRef = useRef(null)
     const inputUsernameRef = useRef(null)
@@ -54,7 +54,9 @@ export default function RegistePage() {
     const handleSubmit = (evt)=>{
         evt.preventDefault()
 
-        registerUser(input)
+        registerUser(input, evt, ()=>{
+
+        })
     }
 
   return (

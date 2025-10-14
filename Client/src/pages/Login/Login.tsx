@@ -1,18 +1,17 @@
-import React, { useRef, useState} from 'react'
+import React, { useEffect, useRef, useState} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AutherizedProvider'
 
 export default function LoginPage() {
     const navigate = useNavigate();
 
-    const { loginUser } = useAuth()
+    const { loginUser, user, token } = useAuth()
     const inputPasswordRef = useRef(null)
     const inputUsernameRef = useRef(null)
     const [input, setInput] = useState({
         username: "",
         password: ""
     })
-    
 
     const onInputChange = (evt) => {
         const { name, value } = evt.target;
@@ -42,9 +41,9 @@ export default function LoginPage() {
 
     const handleSubmit = (evt)=>{
         evt.preventDefault()
-        loginUser(input, (data)=>{
-            if(data.success){
-                navigate("/main")
+        loginUser(input, evt, (data)=>{
+            if(data.status == "success"){
+                //navigate("/main")
             }
         })
     }

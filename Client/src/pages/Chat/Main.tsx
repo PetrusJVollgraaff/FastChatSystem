@@ -12,7 +12,7 @@ export default function MainChat() {
         <BrowserRouter>
             <ChatNav />
             <Routes>
-                <Route path="/main" element={<ChatCTN />}/>
+                <Route path="/" element={<ChatCTN />}/>
             </Routes>
         </BrowserRouter>
     </SocketProvider>
