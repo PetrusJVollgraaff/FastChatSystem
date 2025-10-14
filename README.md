@@ -22,8 +22,7 @@ install dependencies
 run application
 
 ```
-uvicorn app.main:app --reload --port 8000
-
+python app.py
 ```
 
 Client - React
