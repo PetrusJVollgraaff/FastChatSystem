@@ -45,35 +45,20 @@ async def websocket_endpoint(websocket: WebSocket):
         raw = await websocket.receive_text()
         import json
         data = json.loads(raw)
-        if data.get("type") != "join" or not data.get("token"):
-            await websocket.send_text(json.dumps({"type": "error", "text": "Missing token"}))
+        if data.get("type") != "join" or not data.get("username"):
+            await websocket.send_text(json.dumps({"type": "error", "text": "First message must be join with username"}))
             await websocket.close()
             return
 
-        print(data)
-        from jose import jwt, JWTError
-        from .Auth.auth import SECRET_KEY, ALGORITHM
-
-        try:
-            payload = jwt.decode(data["token"], SECRET_KEY, algorithms=[ALGORITHM])
-            username = payload.get("sub")
-            if not username:
-                raise ValueError
-        except JWTError:
-            await websocket.send_text(json.dumps({"type": "error", "text": "Invalid token"}))
-            await websocket.close()
-            return
-        
+        username = data["username"]
         await manager.connect(websocket, username)
 
 
         while True:
             raw = await websocket.receive_text()
-            print(raw)
             data = json.loads(raw)
             if data.get("type") == "message":
-                content = data["content"].get("message", "").strip()
-                print(content)
+                content = data.get("content", "").strip()
                 if not content:
                     continue
                 # persist
@@ -95,13 +80,10 @@ async def websocket_endpoint(websocket: WebSocket):
                 })'''
 
     except WebSocketDisconnect:
-        print("ws closed 1")
         await manager.disconnect(websocket)
     except Exception as e:
-        print(e)
         # ensure disconnection and cleanup
         try:
-            print("ws closed 2")
             await manager.disconnect(websocket)
         except:
             pass
