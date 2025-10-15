@@ -17,9 +17,9 @@ export function SocketProvider({children}){
     useEffect(()=>{
         if(!token) return;
 
-        console.log(token)
+        console.log(token, user)
         
-        const ws = new WebSocket("ws://localhost:5000/ws")
+        const ws = new WebSocket(`ws://localhost:5000/ws/${user.id}`)
         wsRef.current = ws;
         ws.onopen = ()=>{
             setConnected(true)

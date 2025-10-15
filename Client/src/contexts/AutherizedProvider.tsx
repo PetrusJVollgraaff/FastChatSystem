@@ -13,7 +13,7 @@ export function AutherizedProvider({children}) {
         
         if(token_get){
             const decoded = jwtDecode(token_get);
-            setUser({username:decoded.sub});
+            setUser({username:decoded.sub, id: decoded.id});
             setToken({access: token_get})
         } 
     },[]);

@@ -27,8 +27,8 @@ def on_startup():
 def on_shutdown():
     print('Server shutting down...')
 
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
+@app.websocket("/ws/{user_id}")
+async def websocket_endpoint(websocket: WebSocket, user_id: int,):
     """
     WebSocket protocol (simple):
         - On connect: client sends a "join" message with {"type":"join","username":"alice"}
@@ -42,37 +42,22 @@ async def websocket_endpoint(websocket: WebSocket):
 
     try:
         # First message from client must be join with username
-        raw = await websocket.receive_text()
+        await manager.first_join(websocket)
         import json
-        data = json.loads(raw)
-        if data.get("type") != "join" or not data.get("token"):
-            await websocket.send_text(json.dumps({"type": "error", "text": "Missing token"}))
-            await websocket.close()
-            return
-
-        print(data)
-        from jose import jwt, JWTError
-        from .Auth.auth import SECRET_KEY, ALGORITHM
-
-        try:
-            payload = jwt.decode(data["token"], SECRET_KEY, algorithms=[ALGORITHM])
-            username = payload.get("sub")
-            if not username:
-                raise ValueError
-        except JWTError:
-            await websocket.send_text(json.dumps({"type": "error", "text": "Invalid token"}))
-            await websocket.close()
-            return
-        
-        await manager.connect(websocket, username)
+        #print(username, usernameid)
+        #await manager.connect(ws=websocket, username=username, user_id=usernameid)
 
 
         while True:
             raw = await websocket.receive_text()
             print(raw)
             data = json.loads(raw)
-            if data.get("type") == "message":
+            userExists = await manager.check_user_exists(data)
+            if userExists["status"] and data.get("type") == "message":
                 content = data["content"].get("message", "").strip()
+                
+
+                
                 print(content)
                 if not content:
                     continue
@@ -96,12 +81,12 @@ async def websocket_endpoint(websocket: WebSocket):
 
     except WebSocketDisconnect:
         print("ws closed 1")
-        await manager.disconnect(websocket)
+        await manager.disconnect(websocket, user_id)
     except Exception as e:
         print(e)
-        # ensure disconnection and cleanup
+       # ensure disconnection and cleanup
         try:
             print("ws closed 2")
-            await manager.disconnect(websocket)
+            await manager.disconnect(websocket, user_id)
         except:
             pass

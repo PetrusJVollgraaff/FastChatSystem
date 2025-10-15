@@ -28,6 +28,6 @@ def login(username: Annotated[str, Form()], password: Annotated[str, Form()], se
     if not user or not user.verify_password(password):
         raise HTTPException(status_code=400, detail="Invalid credentials")
     
-    token = create_token({"sub": user.username})
+    token = create_token({"sub": user.username, "id": user.id})
 
     return {"status": "success", "message": "Login successful", "access_token": token, "token_type": "bearer"}

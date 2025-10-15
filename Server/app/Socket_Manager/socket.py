@@ -1,26 +1,29 @@
 from . import *
 class ConnectionManager:
     def __init__(self):
-        self.active: Dict[WebSocket, str] = {}
+        self.active: Dict[int, WebSocket] = {} # user_id → WebSocket
         self.lock = asyncio.Lock()
 
-    async def connect(self, websocket: WebSocket, username: str):
-        print(username, websocket, self.lock)
-        websocket.accept()
-
-        async with self.lock:
-            print("hello")
-            self.active[websocket] = username
+    async def connect(self, ws: WebSocket, user_id: int, username: str,):
+        print(ws, user_id, username )
+        #await ws.accept()
+        self.active[user_id] = ws
         await self.broadcast_system(f"{username} joined the chat")
 
     
-    async def disconnect(self, websocket: WebSocket):
-        username = None
-        async with self.lock:
-            if websocket in self.active:
-                username = self.active.pop(websocket)
-        if username:
-            await self.broadcast_system(f"{username} left the chat")
+    async def disconnect(self, user_id: int, username: str):
+        if user_id in self.active:
+            #username = self.active.pop(websocket)
+            del self.active[user_id]
+            if username:
+                await self.broadcast_system(f"{username} left the chat")
+
+    async def send_private(self, message: str, receiver_id: int):
+        websocket = self.active.get(receiver_id)
+        
+        if websocket:
+            await websocket.send_text(json.dumps(message))
+
 
     async def send_personal(self, websocket: WebSocket, message: dict):
         """Send a message to one websocket"""
@@ -34,9 +37,8 @@ class ConnectionManager:
     async def broadcast(self, message: dict):
         """Broadcast to all clients concurrently."""
         data = json.dumps(message)
-        async with self.lock:
-            websockets = list(self.active.keys())
-
+        
+        websockets = list(self.active.values())
         # Send concurrently to avoid blocking on slow clients
         if not websockets:
             return
@@ -54,3 +56,54 @@ class ConnectionManager:
     async def broadcast_system(self, text: str):
         """Send a system message (e.g., join/leave notifications)."""
         await self.broadcast({"type": "system", "text": text})
+
+    async def first_join(self, websocket:WebSocket):
+        raw = await websocket.receive_text()
+        import json
+        data = json.loads(raw)
+    
+        if data.get("type") != "join" or not data.get("token"):
+            await websocket.send_text(json.dumps({"type": "error", "text": "Missing token"}))
+            await websocket.close()
+            return False
+
+
+        from jose import jwt, JWTError
+        
+        try:
+            userExists: Dict = await self.check_user_exists(data)
+            print(userExists)
+            
+            if not userExists["status"]:
+                raise ValueError
+        
+            else:
+                await self.connect(ws=websocket, username=userExists["name"], user_id=userExists["id"])             
+
+        except JWTError:
+            await websocket.send_text(json.dumps({"type": "error", "text": "Invalid token"}))
+            await websocket.close()
+            return False
+        
+    async def check_user_exists(self, data)->Dict:
+        from jose import jwt, JWTError
+        from ..Auth.auth import SECRET_KEY, ALGORITHM
+
+        payload = jwt.decode(data["token"], SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
+        usernameid = payload.get("id")
+
+        if username:
+            from sqlmodel import select
+            from ..models.usersModel import Users
+            from ..DB.db import get_session
+
+            session= get_session()
+            stmt = select(Users).where(Users.username == username, Users.id == usernameid)
+            user_exists = session.exec(stmt).first()
+
+            if user_exists:
+                return {"status":True, "name":username, "id":usernameid}
+        
+        return {"status":False} 
+                
