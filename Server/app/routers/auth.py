@@ -14,11 +14,7 @@ def register(username: Annotated[str, Form()], password: Annotated[str, Form()],
     if existing_user:
         raise HTTPException(status_code=400, detail="UserName already exists")
 
-    user = Users(username=username)
-    user.set_password(password)
-    session.add(user)
-    session.commit()
-    session.refresh(user)
+    createUserAccount(username, password, session)
     
 
     return {"status": "success", "message": "User registered succesfully", "user":username}
