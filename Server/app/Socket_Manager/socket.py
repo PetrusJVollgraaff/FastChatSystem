@@ -91,7 +91,7 @@ class ConnectionManager:
 
         payload = jwt.decode(data["token"], SECRET_KEY, algorithms=[ALGORITHM])
         username = payload.get("sub")
-        usernameid = payload.get("id")
+        unique_id = payload.get("id")
 
         if username:
             from sqlmodel import select
@@ -99,11 +99,11 @@ class ConnectionManager:
             from ..DB.db import get_session
 
             session= get_session()
-            stmt = select(Users).where(Users.username == username, Users.id == usernameid)
+            stmt = select(Users).where(Users.username == username, Users.unique_id == unique_id)
             user_exists = session.exec(stmt).first()
-
+            print(user_exists)
             if user_exists:
-                return {"status":True, "name":username, "id":usernameid}
+                return {"status":True, "name":username, "id":unique_id}
         
         return {"status":False} 
                 

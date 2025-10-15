@@ -16,8 +16,8 @@ def init_db():
 
 def create_Admin_account():
     session= Session(engine)
-    stmt = select(usersModel.Users).where(usersModel.Users.username == "Admin")
-    admin_exists = session.exec(stmt).first()
+    admin_exists = usersModel.FindUserByName(session,  "Admin")
+
     if not admin_exists:
         usersModel.createUserAccount("Admin", "password123", session)
 

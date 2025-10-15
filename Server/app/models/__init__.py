@@ -1,5 +1,8 @@
+import secrets
+import hashlib
+
 from sqlmodel import select
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, text
 from sqlalchemy.orm import declarative_base, Session
 from passlib.context import CryptContext
 from datetime import datetime

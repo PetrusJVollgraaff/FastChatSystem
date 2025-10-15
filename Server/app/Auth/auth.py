@@ -26,8 +26,8 @@ def get_current_user(token: str =  Depends(oauth2_scheme), session= Depends(get_
         raise cred_exc
     
 
-    stmt = select(Users).where(Users.username == username)
-    user = session.exec(stmt).first()
+    
+    user = FindUserByName(session, username)
     if not user:
         raise cred_exc
     return user

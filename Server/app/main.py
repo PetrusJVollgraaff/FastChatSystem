@@ -28,7 +28,7 @@ def on_shutdown():
     print('Server shutting down...')
 
 @app.websocket("/ws/{user_id}")
-async def websocket_endpoint(websocket: WebSocket, user_id: int,):
+async def websocket_endpoint(websocket: WebSocket, user_id: str,):
     """
     WebSocket protocol (simple):
         - On connect: client sends a "join" message with {"type":"join","username":"alice"}

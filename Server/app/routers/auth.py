@@ -7,9 +7,7 @@ router = APIRouter(
 
 @router.post("/register")
 def register(username: Annotated[str, Form()], password: Annotated[str, Form()], confirmpassword: Annotated[str, Form()], session= Depends(get_session)):   
-    stmt = select(Users).where(Users.username == username)
-
-    existing_user = session.exec(stmt).first()
+    existing_user = FindUserByName(session, username)
 
     if existing_user:
         raise HTTPException(status_code=400, detail="UserName already exists")
@@ -28,6 +26,6 @@ def login(username: Annotated[str, Form()], password: Annotated[str, Form()], se
     if not user or not user.verify_password(password):
         raise HTTPException(status_code=400, detail="Invalid credentials")
     
-    token = create_token({"sub": user.username, "id": user.id})
+    token = create_token({"sub": user.username, "id": user.unique_id})
 
     return {"status": "success", "message": "Login successful", "access_token": token, "token_type": "bearer"}
