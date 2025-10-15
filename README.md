@@ -9,14 +9,14 @@ cd Server
 
 python -m venv venv
 
-env\Scripts\activate
+venv\Scripts\activate
 
 ```
 
 install dependencies
 
 ```
-    pip install -r requirements.txt
+    pip install -r requirement.txt
 ```
 
 run application
@@ -29,7 +29,7 @@ Client - React
 
 ```
 
-cd frontend
+cd Client
 npm install
 npm run dev
 
