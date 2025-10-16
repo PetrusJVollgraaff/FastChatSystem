@@ -1,17 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { useAuth } from '../../contexts/AutherizedProvider'
 
 export default function SearchUsers({closeModal}) {
+    const {token} = useAuth()
     const [searchText, setSearchText] = useState(null)
     const [listUsers, setListUsers] = useState([])
     const [visible, setVisible] = useState(10)
     const [loading, setLoading] = useState(false)
     const listRef = useRef(null)
+    const hasFetched = useRef(false);
     const searchTimeoutRef = useRef<NodeJS.Timeout |null>(null)
-    
+      
     useEffect(()=>{
-        
+        if (hasFetched.current) return;
+        getSearchUsers()
     },[])
-   
+
     useEffect(()=>{
         const handleScroll = ()=>{
             if(!listRef.current)return
@@ -43,6 +47,37 @@ export default function SearchUsers({closeModal}) {
         searchTimeoutRef.current = setTimeout(()=>{
             console.log("hello")
         },1000)
+    }
+
+    const getSearchUsers =()=>{
+        hasFetched.current = true;
+        setLoading(true)
+        const formData = new FormData()
+        formData.append("token", token.access )
+
+        fetch("http://localhost:5000/search/",{
+            method: 'POST',
+            body: formData,
+        })
+        .then((response)=>{
+                if (!response.ok) {
+                    const errorText = response.text();
+                    throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText}`);
+                }
+
+                return response.json();
+            }).then((response)=>{
+                if(response.status == "success"){
+                    setTimeout(()=>{
+                        setListUsers(response.search)
+                        setLoading(false)
+                    },2000)
+                    
+                }
+                
+            }).catch((e)=>{
+                console.error(e)
+            })
     }
 
   return (

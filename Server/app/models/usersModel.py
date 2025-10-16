@@ -148,7 +148,7 @@ def FindUserByName(db_session, username):
                     text("""
                          SELECT id 
                          FROM users
-                         WHERE delete_at IS NULL AND username=:username
+                         WHERE username=:username
                          """),
                     {"username": username}
                 )

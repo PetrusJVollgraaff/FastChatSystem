@@ -25,7 +25,7 @@ export default function Modal({ modalObj }:ModalTypeProps){
     return createPortal(
         <dialog className='popup_modal' ref={dialogRef} onCancel={modalObj.onClose}>
             <div className='popup_modal_header'>
-                {modalObj.title}
+                <div className="popup_modal_title">{modalObj.title}</div>
             </div>
             <div className='popup_modal_body'>
                 {modalObj.content}

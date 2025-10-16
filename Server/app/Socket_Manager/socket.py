@@ -69,9 +69,10 @@ class ConnectionManager:
 
 
         from jose import jwt, JWTError
+        from ..Util.util import userAccountExists
         
         try:
-            userExists: Dict = await self.check_user_exists(data)
+            userExists: Dict = userAccountExists(data["token"]) #self.check_user_exists(data)
             print(userExists)
             
             if not userExists["status"]:
@@ -84,26 +85,4 @@ class ConnectionManager:
             await websocket.send_text(json.dumps({"type": "error", "text": "Invalid token"}))
             await websocket.close()
             return False
-        
-    async def check_user_exists(self, data)->Dict:
-        from jose import jwt, JWTError
-        from ..Auth.auth import SECRET_KEY, ALGORITHM
-
-        payload = jwt.decode(data["token"], SECRET_KEY, algorithms=[ALGORITHM])
-        username = payload.get("sub")
-        unique_id = payload.get("id")
-
-        if username:
-            from sqlmodel import select
-            from ..models.usersModel import Users
-            from ..DB.db import get_session
-
-            session= get_session()
-            stmt = select(Users).where(Users.username == username, Users.unique_id == unique_id)
-            user_exists = session.exec(stmt).first()
-            print(user_exists)
-            if user_exists:
-                return {"status":True, "name":username, "id":unique_id}
-        
-        return {"status":False} 
                 

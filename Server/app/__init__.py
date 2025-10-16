@@ -6,7 +6,8 @@ from .Socket_Manager.socket import ConnectionManager
 from typing import List, Annotated
 #from .models.usersModel import Users
 from .DB.db import init_db, get_session
-from .routers import auth
+from .routers.auth import route as authrouter
+from .routers.search import route as searchrouter
 
 
 

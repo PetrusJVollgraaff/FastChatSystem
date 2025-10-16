@@ -103,11 +103,19 @@ body#root.chat nav {
   display: flex;
   height: 100%;
   background-color: antiquewhite;
+  flex-direction: column;
 }
 
-body#root.chat nav button.logout_btn {
-  height: 20px;
+body#root.chat nav > * {
+  box-sizing: border-box;
+}
+
+body#root.chat nav input,
+body#root.chat nav button {
+  height: 30px;
   width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 5px;
 }
 
 body#root.chat nav ul {
@@ -153,4 +161,18 @@ dialog.popup_modal {
   border-radius: 10px;
   padding: 0px;
   min-height: 30px;
+}
+
+dialog.popup_modal .popup_modal_header {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+dialog.popup_modal .popup_modal_header .popup_modal_title {
+  padding-left: 15px;
+}
+
+dialog.popup_modal .popup_modal_body {
 }

@@ -9,7 +9,7 @@ def create_token(data: dict, expires_delta: int = None):
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def get_current_user(token: str =  Depends(oauth2_scheme), session= Depends(get_session)):
+def get_current_user(token: str = Depends(oauth2_scheme), session= Depends(get_session)):
     cred_exc = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid authentication credentials",
