@@ -6,20 +6,16 @@ html {
   height: 100%;
 }
 
-body {
+body#root {
   background-image: linear-gradient(45deg, #f96308, transparent);
   background-repeat: no-repeat;
   min-height: 100%;
   margin: 0px;
   height: 100%;
-}
-
-body #root {
   min-height: 100%;
-  height: 100%;
 }
 
-body:not(.chat) #root nav {
+body#root:not(.chat) nav {
   width: 100%;
   display: flex;
   justify-content: end;
@@ -31,14 +27,14 @@ body:not(.chat) #root nav {
   left: 0%;
 }
 
-body:not(.chat) #root nav ul {
+body#root:not(.chat) nav ul {
   height: 100%;
   display: flex;
   padding: 0px;
   list-style-type: none;
 }
 
-body:not(.chat) #root nav ul > li {
+body#root:not(.chat) nav ul > li {
   height: 100%;
   min-width: 80px;
 
@@ -97,24 +93,24 @@ body:not(.chat) #root nav ul > li {
 
 /** Main Chat **/
 
-body.chat #root {
+body#root.chat {
   display: flex;
   flex-direction: row;
 }
 
-body.chat #root nav {
+body#root.chat nav {
   width: 300px;
   display: flex;
   height: 100%;
   background-color: antiquewhite;
 }
 
-body.chat #root nav button.logout_btn {
+body#root.chat nav button.logout_btn {
   height: 20px;
   width: 100%;
 }
 
-body.chat #root nav ul {
+body#root.chat nav ul {
   height: calc(100% - 20px);
   display: flex;
   padding: 0px;
@@ -122,7 +118,7 @@ body.chat #root nav ul {
   overflow-y: auto;
 }
 
-body.chat #root nav ul > li {
+body#root.chat nav ul > li {
   height: 80px;
   width: 100%;
   display: flex;
@@ -130,22 +126,31 @@ body.chat #root nav ul > li {
   justify-content: center;
 }
 
-body.chat #root .chat_container {
+body#root.chat .chat_container {
   width: 100%;
   height: inherit;
 }
 
-body.chat #root .chat_container .chat_message_ctn {
+body#root.chat .chat_container .chat_message_ctn {
   height: calc(100% - 65px);
 }
 
-body.chat #root .chat_container .chat_textbox_ctn {
+body#root.chat .chat_container .chat_textbox_ctn {
   height: 65px;
   padding: 15px;
 }
 
-body.chat #root .chat_container .chat_textbox_ctn form > textarea {
+body#root.chat .chat_container .chat_textbox_ctn form > textarea {
   resize: none;
   width: 100%;
   height: calc(100% - 30px);
+}
+
+dialog.popup_modal {
+  min-width: 50%;
+  max-height: 70%;
+  border: 1px solid;
+  border-radius: 10px;
+  padding: 0px;
+  min-height: 30px;
 }

@@ -37,7 +37,7 @@ export default function ChatCTN() {
   }
   
   return (
-    <div className="chat_container">
+    <main className="chat_container">
         <div className="chat_message_ctn">
 
         </div>
@@ -53,6 +53,6 @@ export default function ChatCTN() {
               <button type="submit">Send</button>
             </form>            
         </div>
-    </div>
+    </main>
   )
 }

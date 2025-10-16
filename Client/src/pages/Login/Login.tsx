@@ -49,7 +49,7 @@ export default function LoginPage() {
     }
   
     return (
-    <div className='login_ctn'>
+    <main className='login_ctn'>
         <form onSubmit={handleSubmit}>
             <fieldset>
                 <legend>Login</legend>
@@ -86,6 +86,6 @@ export default function LoginPage() {
                 <button type="submit">Login</button>
             </div>
         </form>
-    </div>
+    </main>
   )
 }

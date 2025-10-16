@@ -60,7 +60,7 @@ export default function RegistePage() {
     }
 
   return (
-    <div className='register_ctn'>
+    <main className='register_ctn'>
         <form id="Register" onSubmit={handleSubmit} >
             <fieldset>
                 <legend>Register</legend>
@@ -111,6 +111,6 @@ export default function RegistePage() {
                 <button type="submit">Register</button>
             </div>
         </form>
-    </div>
+    </main>
   )
 }
