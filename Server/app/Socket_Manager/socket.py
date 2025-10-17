@@ -73,7 +73,7 @@ class ConnectionManager:
         
         try:
             userExists: Dict = userAccountExists(data["token"]) #self.check_user_exists(data)
-            print(userExists)
+            #print(userExists)
             
             if not userExists["status"]:
                 raise ValueError

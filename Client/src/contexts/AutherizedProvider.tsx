@@ -9,7 +9,6 @@ export function AutherizedProvider({children}) {
     
     useEffect(()=>{
         const token_get = localStorage.getItem("token")
-        console.log(token_get)
         
         if(token_get){
             const decoded = jwtDecode(token_get);
@@ -57,7 +56,7 @@ export function AutherizedProvider({children}) {
                 method: 'POST',
                 body: formData,
             }).then((response)=>{
-                console.log(response)
+
                 if (!response.ok) {
                     const errorText = response.text();
                     throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText}`);
@@ -65,7 +64,6 @@ export function AutherizedProvider({children}) {
 
                 return response.json();
             }).then((response)=>{
-                console.log(response)
                 if(response.status == "success"){
                     localStorage.setItem("token", response.access_token)
                     setUser({username});

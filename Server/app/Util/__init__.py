@@ -1,9 +1,10 @@
 import os
 from sqlmodel import select
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Form, Depends
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Form, Depends, HTTPException
+from sqlalchemy import text
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Annotated
-from jose import jwt
+from jose import jwt, JWTError
 
 from ..Socket_Manager.socket import ConnectionManager
 from ..models.usersModel import Users

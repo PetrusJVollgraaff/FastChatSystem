@@ -8,10 +8,28 @@ def userAccountExists(token):
 
     if username:
         session= get_session()
-        stmt = select(Users).where(Users.username == username, Users.unique_id == unique_id)
-        user_exists = session.exec(stmt).first()
-        #print(user_exists)
+        user_exists = session.execute(
+                    text("SELECT id, username, contacts, unique_id FROM users WHERE unique_id = :uid AND username=:username"),
+                    {"uid": unique_id, "username": username}
+                ).fetchone()      
+
         if user_exists:
-            return {"status":True, "name":username, "id":unique_id}
+            print(user_exists)
+            return {"status":True, "name": user_exists.username, "id":user_exists.unique_id, "contacts": user_exists.contacts, "db_id": user_exists.id }
     
     return {"status":False} 
+
+def confirmUserExists(token):
+    print(token)
+    try:
+        if not token:
+            raise HTTPException(status_code=404, detail="Not Found")
+        
+        userexist = userAccountExists(token)
+        
+        if not userexist["status"]:
+            raise HTTPException(status_code=401, detail="Unauthized")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Unauthized")
+    
+    return userexist

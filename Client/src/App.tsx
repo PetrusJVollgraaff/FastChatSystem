@@ -10,12 +10,8 @@ import FrontPage from './pages/FrontPage';
 function AutherizedPages(){
   const { user, token } = useAuth()
   
-
-    console.log(token, user)
-
   if(user && token){
-    document.querySelector('body')?.classList.add("chat")
-  
+    document.querySelector('body')?.classList.add("chat")  
   }else{
     document.querySelector('body')?.classList.remove("chat")
   }

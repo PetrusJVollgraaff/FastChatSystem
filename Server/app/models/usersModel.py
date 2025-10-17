@@ -64,7 +64,7 @@ class OneOnOne(Base):
                     text("""
                          SELECT id 
                          FROM oneonone 
-                         WHERE delete_at IS NOT NULL AND 
+                         WHERE delete_at IS NULL AND 
                          (
                             (sender_id=:senderid AND receiver_id=:receiverid) 
                             OR
@@ -73,8 +73,14 @@ class OneOnOne(Base):
                          """),
                     {"senderid": senderID, "receiverid": receiverID}
                 ).fetchone()
+        
+
         if not existing:
-            self.sender_id(db_session=db_session, sender_id=senderID, receiver_id=receiverID)
+            self.start_conversation(db_session=db_session, sender_id=senderID, receiver_id=receiverID)
+            return {"connection": "created"}
+        else:
+            return {"connection": "exists"}
+        
         
 
     def start_conversation(self, db_session, sender_id:int, receiver_id:int):
@@ -116,7 +122,7 @@ class UsersBlockSenders(Base):
                     text("""
                          SELECT id 
                          FROM usersblocksenders
-                         WHERE delete_at IS NOT NULL AND 
+                         WHERE delete_at IS NULL AND 
                             block_sender_id=:senderid AND receiver_id=:receiverid
                          """),
                     {"senderid": senderID, "receiverid": receiverID}
@@ -154,6 +160,18 @@ def FindUserByName(db_session, username):
                 )
     return result.fetchone()
 
+
+def findUserByNameAndUniqueID(db_session, username:str, uniqueid:str):
+    result = db_session.execute(
+                    text("""
+                         SELECT id, unique_id, username
+                         FROM users
+                         WHERE delete_at IS NULL AND 
+                            username=:username AND unique_id=:uniqueid
+                         """),
+                    {"username": username, "uniqueid":uniqueid}
+                )
+    return result.mappings().fetchone()
 
 def createUserAccount(username, password, session):
     user = Users(username=username)

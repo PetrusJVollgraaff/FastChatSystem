@@ -15,6 +15,7 @@ app.add_middleware(
 
 app.include_router(authrouter.router)
 app.include_router(searchrouter.router)
+app.include_router(userrouter.router)
 
 
 manager = ConnectionManager()

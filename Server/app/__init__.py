@@ -8,6 +8,7 @@ from typing import List, Annotated
 from .DB.db import init_db, get_session
 from .routers.auth import route as authrouter
 from .routers.search import route as searchrouter
+from .routers.user import route as userrouter
 
 
 

@@ -175,4 +175,5 @@ dialog.popup_modal .popup_modal_header .popup_modal_title {
 }
 
 dialog.popup_modal .popup_modal_body {
+  padding: 15px;
 }

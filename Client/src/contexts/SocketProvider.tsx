@@ -16,8 +16,6 @@ export function SocketProvider({children}){
 
     useEffect(()=>{
         if(!token) return;
-
-        console.log(token, user)
         
         const ws = new WebSocket(`ws://localhost:5000/ws/${user.id}`)
         wsRef.current = ws;
@@ -29,7 +27,6 @@ export function SocketProvider({children}){
 
 
         ws.onmessage = (evt)=>{
-            console.log(evt)
             try{
                 const data = JSON.parse(evt.data);
                 console.log(data)
@@ -49,10 +46,7 @@ export function SocketProvider({children}){
 
 
     function sendMessage(content){
-        console.log("hello")
         if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-            console.log("world")
-            console.log(wsRef.current)
             wsRef.current.send(JSON.stringify({type: "message", content, token}))
         }
     }

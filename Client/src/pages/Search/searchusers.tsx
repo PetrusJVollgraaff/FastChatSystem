@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../../contexts/AutherizedProvider'
 
-export default function SearchUsers({closeModal}) {
+export default function SearchUsers({closeModal, contactsprops}) {
     const {token} = useAuth()
     const [searchText, setSearchText] = useState(null)
     const [listUsers, setListUsers] = useState([])
@@ -38,14 +38,13 @@ export default function SearchUsers({closeModal}) {
 
     const SearchUsers = (evt) =>{
         const value = evt.target.value;
-        setSearchText(value)
-                
+        
         if(searchTimeoutRef.current){
             clearTimeout(searchTimeoutRef.current)
         }
 
         searchTimeoutRef.current = setTimeout(()=>{
-            console.log("hello")
+            setSearchText(value)
         },1000)
     }
 
@@ -80,6 +79,40 @@ export default function SearchUsers({closeModal}) {
             })
     }
 
+    const addToContact = (idx)=>{
+        const user = listUsers[idx]
+
+        if(user){
+            const formData = new FormData()
+            formData.append("token", token.access )
+            formData.append("username", user.username )
+            formData.append("userid", user.id )
+            fetch("http://localhost:5000/user/addcontact",{
+            method: 'POST',
+            body: formData,
+        })
+        .then((response)=>{
+                if (!response.ok) {
+                    const errorText = response.text();
+                    throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText}`);
+                }
+
+                return response.json();
+            }).then((response)=>{
+                if(response.status =="success"){
+                    var idx = contactsprops.contactlist.findIndex((contact)=> contact.username == user.username && contact.id ==user.id)
+
+                    if (idx == -1){
+                        contactsprops.setContactlist([{username: user.username, id: user.id}])
+                    }
+                }
+                console.log(response)
+            }).catch((e)=>{
+                console.error(e)
+            })
+        }
+    }
+
   return (
     <div className='User_Search_main'>
         <div className='search_ctn'>
@@ -87,11 +120,16 @@ export default function SearchUsers({closeModal}) {
         </div>
         <div className='list_ctn' ref={listRef}>
             {
-                listUsers.slice(0, visible).map((user)=>(
-                    <div>
-                        {user.username}
+                listUsers.slice(0, visible).map((user, idx)=>{
+                    if(!!!searchText || user.username.toLowerCase().includes(searchText.toLowerCase())){
+
+                    const inContacts =  contactsprops.contactlist.some((contact) => contact.id == user.id)
+                    return(
+                    <div key={idx}>
+                        <span>{user.username}</span>
+                        { (inContacts)? <span>In Contacts</span> :  <button type="button" onClick={()=>addToContact(idx)}> Add Contact</button> }
                     </div>
-                ))
+                )}})
             }
             {loading && <p>Loading...</p>}
             {visible >= listUsers.length && <p>No More items</p>}

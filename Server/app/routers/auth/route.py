@@ -7,6 +7,9 @@ router = APIRouter(
 
 @router.post("/register")
 def register(username: Annotated[str, Form()], password: Annotated[str, Form()], confirmpassword: Annotated[str, Form()], session= Depends(get_session)):   
+    if password != confirmpassword:
+        raise HTTPException(status_code=400, detail="Passwords does not match")
+    
     existing_user = FindUserByName(session, username)
 
     if existing_user:

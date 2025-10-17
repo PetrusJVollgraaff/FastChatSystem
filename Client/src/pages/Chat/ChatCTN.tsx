@@ -33,7 +33,6 @@ export default function ChatCTN() {
   const handleSubmit = (evt)=>{
     evt.preventDefault()
     sendMessage(messageDetail)
-    console.log(messageDetail)
   }
   
   return (
