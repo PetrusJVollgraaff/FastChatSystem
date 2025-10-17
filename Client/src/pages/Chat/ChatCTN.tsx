@@ -1,10 +1,13 @@
 import React, { useRef, useState } from 'react'
 import { useSocket } from '../../contexts/SocketProvider';
+import  { type ContactsTypeProps } from './Main';
 
-export default function ChatCTN() {
+export default function ChatCTN({contacttype}:ContactsTypeProps) {
   const {sendMessage} = useSocket()
   const inputMessageRef = useRef(null)
+  const [sendtoRef] = useState(contacttype.selecteduser)
   const [messageDetail, setMessageDetail] = useState({
+    sendto: contacttype.selecteduser,
     message: ""
   })
 
@@ -14,7 +17,12 @@ export default function ChatCTN() {
         ...prev,
         [name]: value,
         }));
+        setMessageDetail((prev) => ({
+        ...prev,
+        ['sendto']: contacttype.selecteduser,
+        }));
         validateInput(evt);
+        
     };
 
   const validateInput = (evt) => {
@@ -32,6 +40,7 @@ export default function ChatCTN() {
 
   const handleSubmit = (evt)=>{
     evt.preventDefault()
+    console.log(messageDetail)
     sendMessage(messageDetail)
   }
   

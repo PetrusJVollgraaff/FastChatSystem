@@ -5,13 +5,14 @@ class ConnectionManager:
         self.lock = asyncio.Lock()
 
     async def connect(self, ws: WebSocket, user_id: int, username: str,):
-        print(ws, user_id, username )
+        print("user connected ", username )
         #await ws.accept()
         self.active[user_id] = ws
         await self.broadcast_system(f"{username} joined the chat")
 
     
     async def disconnect(self, user_id: int, username: str):
+        print("user disconnected ", username )
         if user_id in self.active:
             #username = self.active.pop(websocket)
             del self.active[user_id]

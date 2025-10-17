@@ -44,7 +44,10 @@ def getUserContacts(token: Annotated[str, Form()], username: Annotated[str, Form
 
     print(connectioncheck)
     if not str(contactuserexist["id"]) in contacts:
-        contacts.append(str(contactuserexist["id"]))
+        if contacts[0] == "":
+            contacts[0] = str(contactuserexist["id"]) 
+        else:
+            contacts.append(str(contactuserexist["id"]))
         newcontacts = ','.join(contacts)
 
         

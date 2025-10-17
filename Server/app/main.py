@@ -54,7 +54,8 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str,):
             raw = await websocket.receive_text()
             print(raw)
             data = json.loads(raw)
-            userExists = await manager.check_user_exists(data)
+            print(data)
+            userExists : Dict = userAccountExists(data["token"]["access"]) #await manager.check_user_exists(data)
             if userExists["status"] and data.get("type") == "message":
                 content = data["content"].get("message", "").strip()
                 

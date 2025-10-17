@@ -106,7 +106,6 @@ export default function SearchUsers({closeModal, contactsprops}) {
                         contactsprops.setContactlist([{username: user.username, id: user.id}])
                     }
                 }
-                console.log(response)
             }).catch((e)=>{
                 console.error(e)
             })

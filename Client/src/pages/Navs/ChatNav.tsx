@@ -3,9 +3,10 @@ import { useAuth } from '../../contexts/AutherizedProvider';
 import { useNavigate } from 'react-router-dom';
 import Modal, { type ModalTypeProps } from '../Modal/modal';
 import SearchUsers from '../Search/searchusers';
-import Contacts, { type ContactsTypeProps } from '../Contacts/Contacts';
+import Contacts from '../Contacts/Contacts';
+import {type ContactsTypeProps } from '../Chat/Main';
 
-export default function ChatNav() {
+export default function ChatNav({contacttype}:ContactsTypeProps) {
     const { logoutUser} = useAuth()
     const [listContacts, setListContacts] = useState([])
     const navigate = useNavigate();
@@ -25,27 +26,12 @@ export default function ChatNav() {
     ;
     const closeModal = () => setIsModalOpen(false);
 
-    const appendContacts = (newContacts)=>{
-        setListContacts((prev)=>{
-            const existingIds = new Set(prev.map((c) => c.id));
-            const filtered = newContacts.filter((c) => !existingIds.has(c.id));
-            return [...filtered, ...prev];
-        })
-    }
-
-    const ContactProps : ContactsTypeProps = {
-        setContactlist: appendContacts,
-        contactlist: listContacts
-    }
-
     const ModalProps : ModalTypeProps = {
         title: "hello wolrd",
         isOpen: isModalOpen,
         onClose: closeModal,
-        content: <SearchUsers closeModal={closeModal} contactsprops={ContactProps}/>
+        content: <SearchUsers closeModal={closeModal} contactsprops={contacttype}/>
     }
-
-    
 
     return (
         <nav className="contact_nav">
@@ -57,7 +43,7 @@ export default function ChatNav() {
                 <button onClick={openModal}>Start Message</button>
             </div>
             <div >
-                <Contacts contacttype={ContactProps}/>
+                <Contacts contacttype={contacttype}/>
 
             </div>
             <Modal modalObj={ModalProps} >

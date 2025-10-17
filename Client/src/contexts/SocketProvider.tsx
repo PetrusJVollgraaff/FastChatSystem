@@ -41,7 +41,7 @@ export function SocketProvider({children}){
         }
 
 
-        return ()=> ws.close()
+        return () => ws.close()
     },[user, token])
 
 
