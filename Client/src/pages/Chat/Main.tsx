@@ -87,9 +87,9 @@ export default function MainChat() {
         },
         setSelectedUser: function(user){
             setSelectContact((prev)=>{
-                console.log(prev, prev != user.id)
-                if(prev != user.id){
-                    return user.id;
+                console.log(prev, prev != user)
+                if(prev != user){
+                    return user;
                 }
 
                 return prev;
@@ -99,18 +99,13 @@ export default function MainChat() {
         },
     }
 
-    /**
-     <Routes>
-                    <Route path="/" element={<ChatCTN contacttype={ContactProps} />}/>
-                </Routes>
-     */
-
     return (
         <SocketProvider>
             <BrowserRouter>
                 <ChatNav contacttype={ContactProps}/>
-                <ChatCTN contacttype={ContactProps}/>
-                
+                <Routes>
+                    <Route path="/" element={<ChatCTN contacttype={ContactProps} />}/>
+                </Routes>
             </BrowserRouter>
         </SocketProvider>
     )
