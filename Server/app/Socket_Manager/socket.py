@@ -1,7 +1,7 @@
 from . import *
 class ConnectionManager:
     def __init__(self):
-        self.active: Dict[int, WebSocket] = {} # user_id → WebSocket
+        self.active: Dict[str, WebSocket] = {} # user_id → WebSocket
         self.lock = asyncio.Lock()
 
     async def connect(self, ws: WebSocket, user_id: int, username: str,):
@@ -11,7 +11,7 @@ class ConnectionManager:
         await self.broadcast_system(f"{username} joined the chat")
 
     
-    async def disconnect(self, user_id: int, username: str):
+    async def disconnect(self, user_id: str, username: str):
         print("user disconnected ", username )
         if user_id in self.active:
             #username = self.active.pop(websocket)
@@ -19,11 +19,20 @@ class ConnectionManager:
             if username:
                 await self.broadcast_system(f"{username} left the chat")
 
-    async def send_private(self, message: str, receiver_id: int):
-        websocket = self.active.get(receiver_id)
+
+    async def send_private(self, content1: dict, content2:dict, receiver_id: str, sender_id:str):
         
-        if websocket:
-            await websocket.send_text(json.dumps(message))
+        websocket1 = self.active.get(receiver_id)
+        print(websocket1)
+        
+        if websocket1:
+            await websocket1.send_text(json.dumps({"message": content1}))
+
+        websocket2 = self.active.get(sender_id)
+        print(websocket2)
+        
+        if websocket2:
+            await websocket2.send_text(json.dumps({"message": content2}))
 
 
     async def send_personal(self, websocket: WebSocket, message: dict):
@@ -54,9 +63,11 @@ class ConnectionManager:
                     if ws in self.active:
                         self.active.pop(ws, None)
 
+
     async def broadcast_system(self, text: str):
         """Send a system message (e.g., join/leave notifications)."""
         await self.broadcast({"type": "system", "text": text})
+
 
     async def first_join(self, websocket:WebSocket):
         raw = await websocket.receive_text()

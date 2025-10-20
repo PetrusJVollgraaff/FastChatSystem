@@ -1,3 +1,5 @@
+from .models.messageModel import setPrivateMessage
+from .models.usersModel import findUserByNameAndUniqueID
 from . import *
 
 
@@ -52,20 +54,32 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str,):
 
         while True:
             raw = await websocket.receive_text()
-            print(raw)
+            #print(raw)
             data = json.loads(raw)
             print(data)
             userExists : Dict = userAccountExists(data["token"]["access"]) #await manager.check_user_exists(data)
+           
             if userExists["status"] and data.get("type") == "message":
                 content = data["content"].get("message", "").strip()
                 
-
                 
-                print(content)
                 if not content:
                     continue
+                
+                receiverID = data["content"].get("sendto", "").strip()
+
+                if(receiverID):
+                    session = get_session()
+                    results = setPrivateMessage(session, sender_id=userExists["id"], receiver_id=receiverID, message=content)
+                    if results[0]:
+                        #receiverexists = findUserByNameAndUniqueID(session, username, userid)
+                        await manager.send_private(content1=results[1], content2=results[2], receiver_id=receiverID, sender_id=userExists["id"])
+                    
+                
+                #print(content)
+                
                 # persist
-                '''session = get_session()
+                '''
                 msg = Message(username=username, content=content)
                 session.add(msg)
                 session.commit()

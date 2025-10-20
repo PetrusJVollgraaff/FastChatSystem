@@ -147,8 +147,49 @@ body#root.chat .chat_container .chat_message_ctn {
   height: calc(100% - 130px);
 }
 
+body#root.chat .chat_container .chat_message_ctn > ul {
+  padding: 0px 15px;
+  list-style: none;
+  height: 100%;
+  max-height: 100%;
+  overflow-x: auto;
+  margin: 0px;
+}
+
+body#root.chat .chat_container .chat_message_ctn > ul > li[data-dir="1"] {
+  text-align: right;
+}
+
+body#root.chat .chat_container .chat_message_ctn > ul > li[data-dir="2"] {
+  text-align: left;
+}
+
+body#root.chat .chat_container .chat_message_ctn > ul > li > div {
+}
+
+body#root.chat .chat_container .chat_message_ctn > ul > li > div div.content {
+  text-align: left;
+  max-width: 90%;
+  overflow-wrap: break-word;
+  display: inline-block;
+  border: 1px solid orangered;
+  border-radius: 15px;
+  padding: 8px 15px;
+}
+
+body#root.chat
+  .chat_container
+  .chat_message_ctn
+  > ul
+  > li
+  > div
+  div.content
+  > p {
+  margin: 0px;
+}
+
 body#root.chat .chat_container .chat_textbox_ctn {
-  height: 65px;
+  height: 35px;
   padding: 15px;
 }
 

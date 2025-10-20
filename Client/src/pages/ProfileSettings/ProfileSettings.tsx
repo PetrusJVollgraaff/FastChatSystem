@@ -6,10 +6,10 @@ export default function ProfileSettings({closeModal}) {
     const [loading, setLoading] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const hasFetched = useRef(false);
-     const [profile, setProfile] = useState({
-            username: "",
-            aboutme: ""
-        })
+    const [profile, setProfile] = useState({
+        username: "",
+        aboutme: ""
+    })
 
     
     

@@ -1,4 +1,5 @@
 
+from ...models.usersModel import get_User_ID
 from . import *
 
 router = APIRouter(
@@ -99,3 +100,38 @@ def getUserSettings(token: Annotated[str, Form()], settings: Annotated[str, Form
     db_session = get_session()
     saveUserProfile(db_session, data, userexist["db_id"])
     return {"status": "success"}
+
+
+@router.post("/messages")
+def getPrivateMessage(token: Annotated[str, Form()], selecteduserid: Annotated[str, Form()]):
+    userexist = confirmUserExists(token)
+
+    db_session = get_session()
+    receiverID = get_User_ID(db_session, selecteduserid)
+    result = db_session.execute(
+                    text(f"""
+                         SELECT 
+                            M.message
+                            ,M.create_at
+                            ,(SELECT U.username FROM users U WHERE U.id = M.sender_id) sender_username
+                            ,(SELECT U.username FROM users U WHERE U.id = M.receiver_id) receiver_username
+                            ,CASE
+                                WHEN M.sender_id=:user_id then '1'
+                                ELSE'2'
+                            END 'type'
+                         FROM messages M
+                         WHERE M.delete_at IS NULL AND
+                            (
+                                (M.sender_id=:user_id AND M.receiver_id=:selected_userid) 
+                                OR
+                                (M.sender_id=:selected_userid AND M.receiver_id=:user_id)
+                            )   
+                         ORDER BY M.create_at
+                         """),
+                         {"user_id": userexist["db_id"], "selected_userid": receiverID}
+                )
+    
+    
+    results = result.mappings().all()
+    results
+    return {"status": "success", "messages":results}
