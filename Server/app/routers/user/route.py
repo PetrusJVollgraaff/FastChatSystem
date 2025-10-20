@@ -1,3 +1,4 @@
+
 from . import *
 
 router = APIRouter(
@@ -42,7 +43,7 @@ def getUserContacts(token: Annotated[str, Form()], username: Annotated[str, Form
     contact = OneOnOne(receiver_id=contactuserexist["id"])
     connectioncheck = contact.check_exists(db_session, sender_id=userexist["id"], receiver_id=contactuserexist["unique_id"])
 
-    print(connectioncheck)
+    #print(connectioncheck)
     if not str(contactuserexist["id"]) in contacts:
         if contacts[0] == "":
             contacts[0] = str(contactuserexist["id"]) 
@@ -52,7 +53,7 @@ def getUserContacts(token: Annotated[str, Form()], username: Annotated[str, Form
 
         
 
-        print("hello",  {"senderid": userexist["db_id"], "newcontacts": newcontacts})
+        #print("hello",  {"senderid": userexist["db_id"], "newcontacts": newcontacts})
         db_session.execute(
                     text("""
                          UPDATE users SET contacts=:newcontacts
@@ -63,4 +64,38 @@ def getUserContacts(token: Annotated[str, Form()], username: Annotated[str, Form
         db_session.commit()
 
     return {"status": "success", "message":connectioncheck["connection"]}
+
+
+@router.post("/settings")
+def getUserSettings(token: Annotated[str, Form()]):
+    userexist = confirmUserExists(token)
+
+    print(userexist)
+    db_session = get_session()
+    result = db_session.execute(
+                    text(f"""
+                         SELECT U.username, IFNULL(UP.aboutme, '') AS aboutme
+                         FROM users U
+                         LEFT JOIN userprofile UP ON UP.user_id = U.id
+                         WHERE U.delete_at IS NULL AND
+                            U.username=:username AND U.unique_id=:uniqueid
+                         """),
+                         {"username": userexist["name"], "uniqueid": userexist["id"]}
+                )
     
+    print(userexist["name"], userexist["id"])
+    results = result.mappings().fetchone()
+    print(results)
+    return {"status": "success", "profile":results}
+
+@router.put("/settings")
+def getUserSettings(token: Annotated[str, Form()], settings: Annotated[str, Form()]):
+    userexist = confirmUserExists(token)
+
+    import json
+    data = json.loads(settings)
+
+    print(settings)
+    db_session = get_session()
+    saveUserProfile(db_session, data, userexist["db_id"])
+    return {"status": "success"}

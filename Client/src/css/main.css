@@ -139,8 +139,12 @@ body#root.chat .chat_container {
   height: inherit;
 }
 
+body#root.chat .chat_container .chat_header {
+  height: 65px;
+}
+
 body#root.chat .chat_container .chat_message_ctn {
-  height: calc(100% - 65px);
+  height: calc(100% - 130px);
 }
 
 body#root.chat .chat_container .chat_textbox_ctn {
@@ -148,10 +152,22 @@ body#root.chat .chat_container .chat_textbox_ctn {
   padding: 15px;
 }
 
+body#root.chat .chat_container .chat_textbox_ctn form {
+  display: flex;
+}
+
 body#root.chat .chat_container .chat_textbox_ctn form > textarea {
   resize: none;
   width: 100%;
   height: calc(100% - 30px);
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+body#root.chat .chat_container .chat_textbox_ctn form > textarea + button {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  width: 60px;
 }
 
 dialog.popup_modal {

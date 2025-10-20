@@ -1,24 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
 import { useSocket } from '../../contexts/SocketProvider';
 import { type ContactsTypeProps } from './Main';
+import { checkEmpty } from '../../utils';
 
 export default function ChatCTN({contacttype}:ContactsTypeProps) {
-  const {sendMessage} = useSocket()
+  const { sendMessage } = useSocket()
   const inputMessageRef = useRef(null)
   const formMessageRef = useRef(null)
   const [messageDetail, setMessageDetail] = useState({
     sendto: contacttype.selecteduser?.id,
     message: ""
   })
-
-  useEffect(()=>{
-    console.log(messageDetail)
-    if(messageDetail.sendto != contacttype.selecteduser?.id)
-    setMessageDetail((prev) => ({
-        ...prev,
-        ['sendto']: contacttype.selecteduser?.id,
-        }));
-  },[messageDetail])
 
   const onInputChange = (evt) => {
         const { name, value } = evt.target;
@@ -34,19 +26,20 @@ export default function ChatCTN({contacttype}:ContactsTypeProps) {
         let { value } = evt.target;
         
         if (inputMessageRef){
-            inputMessageRef.current.setCustomValidity( messageDetail.message === "" || checkEmpty(value)? "Please enter a message.": "")           
+          inputMessageRef?.current.setCustomValidity( messageDetail.message === "" || checkEmpty(value)? "Please enter a message.": "")           
         }
     }
   
-  const checkEmpty = (value) =>{
-        const regex = /^\s*$/;
-        return regex.test(value); 
-    }
-
   const handleSubmit = (evt)=>{
     evt.preventDefault()
-    console.log(messageDetail)
-    sendMessage(messageDetail)
+    console.log("hello", messageDetail)
+    if(contacttype.selecteduser?.id){
+      setMessageDetail((prev) => ({
+        ...prev,
+        ['sendto']: contacttype.selecteduser?.id,
+        }));
+        sendMessage(messageDetail)
+    }    
   }
   
   return (
@@ -57,7 +50,7 @@ export default function ChatCTN({contacttype}:ContactsTypeProps) {
         </div>
         <div className="chat_textbox_ctn">
             <form onSubmit={handleSubmit} ref={formMessageRef}>
-              <input type="hidden" name="sendto" value={contacttype.selecteduser?.id} />
+              
               <textarea 
                 name="message" 
                 required

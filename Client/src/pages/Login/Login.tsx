@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AutherizedProvider'
+import { checkEmpty } from '../../utils';
 
 export default function LoginPage() {
     const navigate = useNavigate();
@@ -32,11 +33,6 @@ export default function LoginPage() {
         if ( inputPasswordRef){
             inputPasswordRef.current.setCustomValidity( input.password === "" || checkEmpty(input.password)? "Please enter a password.": "")
         }
-    }
-
-    const checkEmpty = (value) =>{
-        const regex = /^\s*$/;
-        return regex.test(value); 
     }
 
     const handleSubmit = (evt)=>{

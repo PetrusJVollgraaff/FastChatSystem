@@ -6,7 +6,7 @@ class Users(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True, nullable=False)
-    password_hash = Column(String, nullable=False, unique=True,)
+    password_hash = Column(String, nullable=False, unique=True)
     unique_id = Column(String, nullable=False)
     contacts = Column(String, nullable=True) #1,2,3 
     create_at = Column(DateTime, default=datetime.utcnow)
@@ -40,6 +40,16 @@ class Users(Base):
             if not existing:
                 self.unique_id = unique_id
                 break
+
+
+class UserProfile(Base):
+    __tablename__ = "userprofile"
+
+    id = Column(Integer, primary_key=True, index=True)
+    #nickname = Column(String, unique=True, index=True, nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True, nullable=False, unique=True)
+    aboutme = Column(String, nullable=True)
+
 
 
 class OneOnOne(Base):
@@ -173,6 +183,7 @@ def findUserByNameAndUniqueID(db_session, username:str, uniqueid:str):
                 )
     return result.mappings().fetchone()
 
+
 def createUserAccount(username, password, session):
     user = Users(username=username)
     user.set_password(password)
@@ -182,6 +193,19 @@ def createUserAccount(username, password, session):
     session.commit()
     session.refresh(user)
 
+
+def saveUserProfile(db_session, data, db_id):
+    db_session.execute(
+                    text("""
+                        INSERT INTO userprofile (user_id, aboutme)
+                        VALUES (:userid, :aboutme)
+                        ON CONFLICT(user_id)
+                        DO UPDATE SET aboutme = excluded.aboutme
+                         """),
+                    {"userid": db_id, "aboutme": data["aboutme"]}
+                )
+    db_session.commit()
+    
 
 def get_User_ID(db_session, unique_id):
     session = db_session

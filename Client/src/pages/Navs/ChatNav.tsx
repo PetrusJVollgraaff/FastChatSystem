@@ -5,12 +5,14 @@ import Modal, { type ModalTypeProps } from '../Modal/modal';
 import SearchUsers from '../Search/searchusers';
 import Contacts from '../Contacts/Contacts';
 import {type ContactsTypeProps } from '../Chat/Main';
+import ProfileSettings from '../ProfileSettings/ProfileSettings';
 
 export default function ChatNav({contacttype}:ContactsTypeProps) {
     const { logoutUser} = useAuth()
     const [listContacts, setListContacts] = useState([])
     const navigate = useNavigate();
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+    const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
     const logout = (evt) => {
         logoutUser((data)=>{
@@ -20,33 +22,44 @@ export default function ChatNav({contacttype}:ContactsTypeProps) {
         })
     }
 
-    const openModal = () => {
-        setIsModalOpen(true);
-    }    
-    ;
-    const closeModal = () => setIsModalOpen(false);
+    const openSearchModal = () => setIsSearchModalOpen(true);
+    const closeSearchModal = () => setIsSearchModalOpen(false);
+    
+    const openSettingsModal = () => setIsSettingsModalOpen(true);   
+    const closeSettingsModal = () => setIsSettingsModalOpen(false);
 
-    const ModalProps : ModalTypeProps = {
+    const SearchModalProps : ModalTypeProps = {
         title: "hello wolrd",
-        isOpen: isModalOpen,
-        onClose: closeModal,
-        content: <SearchUsers closeModal={closeModal} contactsprops={contacttype}/>
+        isOpen: isSearchModalOpen,
+        onClose: closeSearchModal,
+        content: <SearchUsers closeModal={closeSearchModal} contactsprops={contacttype}/>
+    }
+
+    const SettingsModalProps : ModalTypeProps = {
+        title: "Profile Settings",
+        isOpen: isSettingsModalOpen,
+        onClose: closeSettingsModal,
+        content: <ProfileSettings closeModal={closeSettingsModal}/>
     }
 
     return (
         <nav className="contact_nav">
             <button onClick={logout} className="logout_btn">Logout</button>
+            <button onClick={openSettingsModal} className="logout_btn">Settings</button>
+
             <div>
                 <input type="search" name="search_contact" id="search_contact" placeholder='Search Contact' />
             </div>
             <div>
-                <button onClick={openModal}>Start Message</button>
+                <button onClick={openSearchModal}>Start Message</button>
             </div>
             <div >
                 <Contacts contacttype={contacttype}/>
-
             </div>
-            <Modal modalObj={ModalProps} >
+            <Modal modalObj={SearchModalProps} >
+                <h1>Hello</h1>
+            </Modal>
+            <Modal modalObj={SettingsModalProps} >
                 <h1>Hello</h1>
             </Modal>
         </nav>
