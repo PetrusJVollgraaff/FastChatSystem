@@ -16,17 +16,12 @@ export default function ChatCTN() {
   })
 
   useEffect(()=>{
-    setMessageDetail((prev) => ({
-        ...prev,
-        ['sendto']: ContactProps.selecteduser?.id,
-        }));
+    setValues('sendto', ContactProps.selecteduser?.id)
   },[ContactProps.selecteduser])
 
   useEffect(()=>{ 
-    console.log(ContactProps.contactlist)
     if (ContactProps.selecteduser == messageDetail.sendto) return;
-    
-    
+        
     getExistingMessages(ContactProps.selecteduser, ()=>{
       setLoading(true)
     }, ()=>{
@@ -51,13 +46,16 @@ export default function ChatCTN() {
 
   const onInputChange = (evt) => {
         const { name, value } = evt.target;
-        setMessageDetail((prev) => ({
-        ...prev,
-        [name]: value,
-        }));
-        
+        setValues(name, value)        
         validateInput(evt);
     };
+
+  const setValues = (key, value)=>{
+    setMessageDetail((prev) => ({
+        ...prev,
+        [key]: value,
+      }));
+  }
 
   const validateInput = (evt) => {
         let { value } = evt.target;
@@ -70,11 +68,11 @@ export default function ChatCTN() {
   const handleSubmit = (evt)=>{
     evt.preventDefault()
     if(ContactProps.selecteduser?.id){
-      setMessageDetail((prev) => ({
-        ...prev,
-        ['sendto']: ContactProps.selecteduser?.id,
-        }));
-        sendMessage(messageDetail)
+      setValues('sendto', ContactProps.selecteduser?.id)
+      sendMessage(messageDetail)
+      formMessageRef.current.reset()
+      setValues('message', "")
+      
     }    
   }
   
@@ -83,7 +81,7 @@ export default function ChatCTN() {
         <div className="chat_header">{ContactProps.selecteduser?.username}</div>
         <div className="chat_message_ctn" >
           <ul>
-            { messagelist.map((message, idx)=>{
+            { messagelist.sort((a,b)=> new Date(b.create_at) - new Date(a.create_at)).map((message, idx)=>{
                     return(
                     <MessageBubble key={idx} data={message}/>
                 )})

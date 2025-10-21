@@ -31,7 +31,7 @@ export function SocketProvider({ children }) {
             try {
                 //const { ContactProps } = useConnection()
                 const data = JSON.parse(evt.data);
-                console.log(data)
+                //console.log(data)
                 if (data?.message) {
                     getPrivateMessage(data)
                 }
@@ -61,7 +61,7 @@ export function SocketProvider({ children }) {
                 return [...prev,...filtered];
             })
         }else{
-            alert("message received from "+data.message.sender_username )
+            alert("message received from "+ data.message.sender_username )
         }        
     }
 

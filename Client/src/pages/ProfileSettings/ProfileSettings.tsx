@@ -10,9 +10,6 @@ export default function ProfileSettings({closeModal}) {
         username: "",
         aboutme: ""
     })
-
-    
-    
     useEffect(()=>{
           if (hasFetched.current) return;
           getUsersSettings()
@@ -25,12 +22,7 @@ export default function ProfileSettings({closeModal}) {
         ...prev,
         [name]: value,
         }));
-        validateInput(evt);
     };
-    
-    const validateInput = (evt) => {
-        let { name, value } = evt.target;
-    }
 
     const getUsersSettings =()=>{
         hasFetched.current = true;
@@ -51,11 +43,8 @@ export default function ProfileSettings({closeModal}) {
                 return response.json();
             }).then((response)=>{
                 if(response.status == "success"){
-                    setTimeout(()=>{
-                        setProfile(response.profile)
-                        setLoading(false)
-                    },2000)
-                    
+                    setProfile(response.profile)
+                    setLoading(false)
                 }
                 
             }).catch((e)=>{
@@ -85,7 +74,7 @@ export default function ProfileSettings({closeModal}) {
             }).then((response)=>{
                 if(response.status == "success"){
                     setTimeout(()=>{
-                        //setProfile(response.profile)
+                        closeModal()
                         setIsSubmitting(false)
                     },2000)
                     
@@ -98,7 +87,6 @@ export default function ProfileSettings({closeModal}) {
         
     }
 
-  
     return (
         <div>
             <form id="profile_model" onSubmit={handleSubmit}>
@@ -109,7 +97,6 @@ export default function ProfileSettings({closeModal}) {
                             name="aboutme" 
                             value={profile.aboutme}
                             onChange={onInputChange}
-                            onBlur={validateInput}
                         ></textarea>
                     </label>
                 </div>

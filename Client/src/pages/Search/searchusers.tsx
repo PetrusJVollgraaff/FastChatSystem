@@ -54,11 +54,8 @@ export default function SearchUsers({closeModal, contactsprops}) {
         const formData = new FormData()
         formData.append("token", token.access )
 
-        fetch("http://localhost:5000/search/",{
-            method: 'POST',
-            body: formData,
-        })
-        .then((response)=>{
+        fetch("http://localhost:5000/search/",{ method: 'POST', body: formData})
+            .then((response)=>{
                 if (!response.ok) {
                     const errorText = response.text();
                     throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText}`);
@@ -67,11 +64,8 @@ export default function SearchUsers({closeModal, contactsprops}) {
                 return response.json();
             }).then((response)=>{
                 if(response.status == "success"){
-                    setTimeout(()=>{
-                        setListUsers(response.search)
-                        setLoading(false)
-                    },2000)
-                    
+                    setListUsers(response.search)
+                    setLoading(false)
                 }
                 
             }).catch((e)=>{

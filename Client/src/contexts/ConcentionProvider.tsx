@@ -87,25 +87,20 @@ export function ConcentionProvider({children}) {
 
             return []
         },
-        appendContactMessage: function({message, id}){
-            console.log(this)
-            
+        appendContactMessage: function({message, id}){           
             const idx = this.contactlist.findIndex((contact) => contact.id == id)
-            console.log(idx, id, message)
+            
             if(idx > -1){
                 this.contactlist[idx].messages.push(message)
-                console.log(this.contactlist[idx].messages)
             }
         },
         setContactMessage: function(messages){
-            console.log(this.contactlist)
             const idx = this.contactlist.findIndex((contact) => contact.id == this.selecteduser.id)
             if(idx > -1){     
                 this.contactlist[idx].messages = messages
             }
         },
         setContactlist: function(newContacts){
-            console.log(newContacts)
             setListContacts((prev)=>{
                 const existingIds = new Set(prev.map((c) => c.id));
                 const filtered = newContacts.filter((c) => !existingIds.has(c.id));

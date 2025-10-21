@@ -154,6 +154,8 @@ body#root.chat .chat_container .chat_message_ctn > ul {
   max-height: 100%;
   overflow-x: auto;
   margin: 0px;
+  display: flex;
+  flex-direction: column-reverse;
 }
 
 body#root.chat .chat_container .chat_message_ctn > ul > li[data-dir="1"] {

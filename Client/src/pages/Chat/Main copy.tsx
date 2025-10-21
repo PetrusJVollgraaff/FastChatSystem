@@ -71,19 +71,9 @@ export default function MainChat() {
                 const filtered = newContacts.filter((c) => !existingIds.has(c.id));
                 return [...filtered, ...prev];
             })
-
-            console.log(this.contactlist, ContactProps)
-            setTimeout(()=>{
-                console.log(this.contactlist, ContactProps)
-            },1000)
         },
         setSelectedUser: function(user){
-            console.log(user)
             setSelectContact(user.id)
-            console.log(this.selecteduser)
-            setTimeout(()=>{
-                console.log(this.selecteduser)
-            },1000)
         },
     }
 
