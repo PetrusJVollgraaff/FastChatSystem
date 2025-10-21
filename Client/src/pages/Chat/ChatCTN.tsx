@@ -1,31 +1,38 @@
 import { useEffect, useRef, useState } from 'react'
 import { useSocket } from '../../contexts/SocketProvider';
-import { type ContactsTypeProps } from './Main';
 import { checkEmpty } from '../../utils';
-import { useAuth } from '../../contexts/AutherizedProvider';
 import MessageBubble from '../message/messageBubble';
+import { useConnection } from '../../contexts/ConcentionProvider';
 
-export default function ChatCTN({contacttype}:ContactsTypeProps) {
-   const {token} = useAuth()
+export default function ChatCTN() {
   const { sendMessage, getExistingMessages, messagelist } = useSocket()
+  const { ContactProps } = useConnection()
   const inputMessageRef = useRef(null)
   const formMessageRef = useRef(null)
   const [loading, setLoading] = useState(false)
   const [messageDetail, setMessageDetail] = useState({  
-    sendto: contacttype.selecteduser?.id,
+    sendto: ContactProps.selecteduser?.id,
     message: ""
   })
 
   useEffect(()=>{
-    if (contacttype.selecteduser == messageDetail.sendto) return;
-    getExistingMessages(contacttype.selecteduser, ()=>{
+    setMessageDetail((prev) => ({
+        ...prev,
+        ['sendto']: ContactProps.selecteduser?.id,
+        }));
+  },[ContactProps.selecteduser])
+
+  useEffect(()=>{ 
+    console.log(ContactProps.contactlist)
+    if (ContactProps.selecteduser == messageDetail.sendto) return;
+    
+    
+    getExistingMessages(ContactProps.selecteduser, ()=>{
       setLoading(true)
     }, ()=>{
       setLoading(false)
-    }) 
-    console.log(messagelist)  
-    
-  },[contacttype.selecteduser])
+    })     
+  },[ContactProps.selecteduser])
 
   /*useEffect(()=>{
           const handleScroll = ()=>{
@@ -62,55 +69,21 @@ export default function ChatCTN({contacttype}:ContactsTypeProps) {
   
   const handleSubmit = (evt)=>{
     evt.preventDefault()
-    console.log("hello", messageDetail)
-    if(contacttype.selecteduser?.id){
+    if(ContactProps.selecteduser?.id){
       setMessageDetail((prev) => ({
         ...prev,
-        ['sendto']: contacttype.selecteduser?.id,
+        ['sendto']: ContactProps.selecteduser?.id,
         }));
         sendMessage(messageDetail)
     }    
   }
-
-  /*const getExistingMessages = ()=>{
-        setLoading(true)
-        if(!contacttype.selecteduser) return;
-        const formData = new FormData()
-        formData.append("token", token.access )
-        formData.append("selecteduserid", contacttype.selecteduser?.id )
-
-        fetch("http://localhost:5000/user/messages",{
-            method: 'POST',
-            body: formData,
-        })
-        .then((response)=>{
-                if (!response.ok) {
-                    const errorText = response.text();
-                    throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText}`);
-                }
-
-                return response.json();
-            }).then((response)=>{
-                if(response.status == "success"){
-                    setTimeout(()=>{
-                        setMessagelist(response.messages)
-                        setLoading(false)
-                    },2000)
-                    
-                }
-                
-            }).catch((e)=>{
-                console.error(e)
-            })
-  }*/
   
   return (
     <main className="chat_container">
-        <div className="chat_header">{contacttype.selecteduser?.username}</div>
+        <div className="chat_header">{ContactProps.selecteduser?.username}</div>
         <div className="chat_message_ctn" >
           <ul>
-            {
-                messagelist.map((message, idx)=>{
+            { messagelist.map((message, idx)=>{
                     return(
                     <MessageBubble key={idx} data={message}/>
                 )})

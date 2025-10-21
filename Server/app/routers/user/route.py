@@ -7,6 +7,34 @@ router = APIRouter(
     tags=["User"]
 )
 
+@router.post("/contacts2")
+def getUserContacts(token: Annotated[str, Form()]):     
+    userexist = confirmUserExists(token)
+    
+    db_session = get_session()
+    result = db_session.execute(
+                    text(f"""
+                         SELECT username, unique_id as id
+                         FROM users
+                         WHERE delete_at IS NULL AND
+                            username!=:username AND  unique_id!=:uniqueid
+                            AND id IN ({userexist["contacts"]})
+                         """),
+                         {"username": userexist["name"], "uniqueid": userexist["id"]}
+                )
+    
+    
+    results = result.mappings().all()
+
+    newresults = [ dict(cont) for cont in results]
+    for contact in newresults:
+        contact["messages"] = []
+
+
+    return {"status": "success", "contacts":newresults}
+
+
+
 @router.post("/contacts")
 def getUserContacts(token: Annotated[str, Form()]):     
     userexist = confirmUserExists(token)

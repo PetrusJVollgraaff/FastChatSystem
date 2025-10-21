@@ -4,12 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import Modal, { type ModalTypeProps } from '../Modal/modal';
 import SearchUsers from '../Search/searchusers';
 import Contacts from '../Contacts/Contacts';
-import {type ContactsTypeProps } from '../Chat/Main';
 import ProfileSettings from '../ProfileSettings/ProfileSettings';
+import { useConnection } from '../../contexts/ConcentionProvider';
 
-export default function ChatNav({contacttype}:ContactsTypeProps) {
+export default function ChatNav() {
     const { logoutUser} = useAuth()
-    const [listContacts, setListContacts] = useState([])
+    const { ContactProps } = useConnection()
     const navigate = useNavigate();
     const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
     const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
@@ -32,7 +32,7 @@ export default function ChatNav({contacttype}:ContactsTypeProps) {
         title: "hello wolrd",
         isOpen: isSearchModalOpen,
         onClose: closeSearchModal,
-        content: <SearchUsers closeModal={closeSearchModal} contactsprops={contacttype}/>
+        content: <SearchUsers closeModal={closeSearchModal} contactsprops={ContactProps}/>
     }
 
     const SettingsModalProps : ModalTypeProps = {
@@ -54,7 +54,7 @@ export default function ChatNav({contacttype}:ContactsTypeProps) {
                 <button onClick={openSearchModal}>Start Message</button>
             </div>
             <div >
-                <Contacts contacttype={contacttype}/>
+                <Contacts />
             </div>
             <Modal modalObj={SearchModalProps} >
                 <h1>Hello</h1>

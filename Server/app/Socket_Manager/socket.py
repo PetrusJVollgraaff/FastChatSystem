@@ -7,6 +7,7 @@ class ConnectionManager:
     async def connect(self, ws: WebSocket, user_id: int, username: str,):
         print("user connected ", username )
         #await ws.accept()
+        #if not self.active[user_id]:
         self.active[user_id] = ws
         await self.broadcast_system(f"{username} joined the chat")
 
@@ -26,13 +27,13 @@ class ConnectionManager:
         print(websocket1)
         
         if websocket1:
-            await websocket1.send_text(json.dumps({"message": content1}))
+            await websocket1.send_text(json.dumps({"message": content2, "id":sender_id}))
 
         websocket2 = self.active.get(sender_id)
         print(websocket2)
         
         if websocket2:
-            await websocket2.send_text(json.dumps({"message": content2}))
+            await websocket2.send_text(json.dumps({"message": content1, "id":receiver_id}))
 
 
     async def send_personal(self, websocket: WebSocket, message: dict):

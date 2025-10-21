@@ -1,95 +1,109 @@
-import React, {useContext, useEffect, useRef, useState} from "react";
-import io from 'socket.io-client'
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useAuth } from "./AutherizedProvider";
+import { useConnection } from "./ConcentionProvider";
 
 const SocketContext = React.createContext()
 
-export function useSocket(){
+export function useSocket() {
     return useContext(SocketContext)
 }
 
-export function SocketProvider({children}){
+export function SocketProvider({ children }) {
     const { user, token } = useAuth();
-    const [messages, setMessages] = useState([])
+    const { ContactProps } = useConnection()
+
     const [connected, setConnected] = useState(false)
     const [messagelist, setMessagelist] = useState([])
     const wsRef = useRef(null)
 
-    useEffect(()=>{
-        if(!token) return;
-        
+    useEffect(() => {
+        if (!token) return;
+
         const ws = new WebSocket(`ws://localhost:5000/ws/${user.id}`)
         wsRef.current = ws;
-        ws.onopen = ()=>{
+        ws.onopen = () => {
             setConnected(true)
-            ws.send(JSON.stringify({type: "join", token: token.access}))
+            ws.send(JSON.stringify({ type: "join", token: token.access }))
             console.log("Connected to WebSocket")
         }
 
-
-        ws.onmessage = (evt)=>{
-            try{
+        ws.onmessage = (evt) => {
+            try {
+                //const { ContactProps } = useConnection()
                 const data = JSON.parse(evt.data);
-                
-                if(data?.message){
-                    setMessagelist((prev)=>{
-                        return [...prev, ...[data.message]]
-                    })
+                console.log(data)
+                if (data?.message) {
+                    getPrivateMessage(data)
                 }
-            }catch(e){
+                
+            } catch (e) {
                 console.error("Invalid WS message", e)
             }
         }
 
-        ws.onclose = ()=>{
+        ws.onclose = () => {
             console.warn(" WebSocket closed")
             setConnected(false)
         }
 
 
         return () => ws.close()
-    },[user, token])
+    }, [user, token, ContactProps, messagelist])
+
+    async function getPrivateMessage(data){
+
+        await ContactProps.appendContactMessage(data)
+        if( data.id == ContactProps.selecteduser.id){
+            setMessagelist((prev)=>{
+                const messages = ContactProps.getMessages()
+                const existingIds = new Set(prev.map((c) => c.create_at));
+                const filtered = messages.filter((c) => !existingIds.has(c.create_at));
+                return [...prev,...filtered];
+            })
+        }else{
+            alert("message received from "+data.message.sender_username )
+        }        
+    }
 
 
-    function sendMessage(content){
-        console.log(content)
+    function sendMessage(content) {
         if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-            wsRef.current.send(JSON.stringify({type: "message", content, token}))
+            wsRef.current.send(JSON.stringify({ type: "message", content, token }))
         }
     }
 
-    function getExistingMessages(selecteduser, callback1, callback2){
-        //setLoading(true)
+    function getExistingMessages(selecteduser, callback1, callback2) {
         callback1()
-        if(!selecteduser) return;
+        if (!selecteduser) return;
         const formData = new FormData()
-        formData.append("token", token.access )
-        formData.append("selecteduserid", selecteduser?.id )
+        formData.append("token", token.access)
+        formData.append("selecteduserid", selecteduser?.id)
 
-        fetch("http://localhost:5000/user/messages",{
+        fetch("http://localhost:5000/user/messages", {
             method: 'POST',
             body: formData,
         })
-        .then((response)=>{
+            .then((response) => {
                 if (!response.ok) {
                     const errorText = response.text();
                     throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText}`);
                 }
 
                 return response.json();
-            }).then((response)=>{
-                if(response.status == "success"){
-                    setMessagelist(response.messages)
-                    callback2()                    
+            }).then((response) => {
+                if (response.status == "success") {
+                    ContactProps.setContactMessage(response.messages)
+                    setMessagelist( ContactProps.getMessages() )
+                    callback2()
                 }
-                
-            }).catch((e)=>{
+
+            }).catch((e) => {
                 console.error(e)
             })
-  }
+    }
 
-    return(
-        <SocketContext.Provider value={{connected, messages, sendMessage, getExistingMessages, messagelist}}>
+    return (
+        <SocketContext.Provider value={{ connected, sendMessage, getExistingMessages, messagelist , setMessagelist}}>
             {children}
         </SocketContext.Provider>
     )
